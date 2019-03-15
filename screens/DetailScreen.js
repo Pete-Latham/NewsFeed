@@ -20,11 +20,11 @@ class DetailScreen extends Component {
     result: '',
   });
 
-  handlePress = async () => {
-    let { url } = this.props.navigation.getParam('news');
-    let result = await WebBrowser.openBrowserAsync(url);
-    this.setState({ result });
-  };
+  // handlePress = async () => {
+  //   let { url } = this.props.navigation.getParam('news');
+  //   let result = await WebBrowser.openBrowserAsync(url);
+  //   this.setState({ result });
+  // };
 
   render() {
     let {
@@ -32,6 +32,7 @@ class DetailScreen extends Component {
       description,
       urlToImage,
       publishedAt,
+      url,
     } = this.props.navigation.getParam('news');
 
     return (
@@ -46,7 +47,9 @@ class DetailScreen extends Component {
             <View style={styles.hr} />
           </View>
           <Text style={styles.articleDetail}>{description}</Text>
-          <Text style={styles.more} onPress={this.handlePress}>
+          <Text
+            style={styles.more}
+            onPress={() => WebBrowser.openBrowserAsync(url)}>
             Read more ...
           </Text>
         </ScrollView>
