@@ -7,19 +7,20 @@ import {
   TouchableHighlight,
 } from 'react-native';
 
-// import axios from 'axios';
-import tempArticleList from '../assets/news.json';
+import moment from 'moment';
+import axios from 'axios';
+// import tempArticleList from '../assets/news.json';
 
 class ListScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       item: '',
-      articleList: tempArticleList,
+      articleList: '',
     };
     this.onPress = this.onPress.bind(this);
     this.renderItem = this.renderItem.bind(this);
-    // this.getFreshData = this.getFreshData.bind(this);
+    this.getFreshData = this.getFreshData.bind(this);
   }
 
   static navigationOptions = {
@@ -28,13 +29,17 @@ class ListScreen extends Component {
       backgroundColor: '#d35400',
     },
     headerTintColor: '#ffffff',
+    headerBackTitleVisible: true,
+    headerBackTitle: 'Back',
   };
 
   getFreshData() {
+    const API_KEY = '6628fd4aaedd4ecea6142eaf008f8fb8';
+    const API_URL = `https://newsapi.org/v2/everything?sources=bbc-news&language=en&apiKey=${API_KEY}`;
     axios
-      .get('https://robocontacts.herokuapp.com/api/contacts?random')
+      .get(API_URL)
       .then(({ data }) => {
-        this.setState({ contacts: data });
+        this.setState({ articleList: data.articles });
       })
       .catch(error => {
         console.log('Something has gone wrong');
@@ -42,9 +47,9 @@ class ListScreen extends Component {
       });
   }
 
-  // componentDidMount() {
-  //   this.getFreshData();
-  // }
+  componentDidMount() {
+    this.getFreshData();
+  }
 
   onPress(item) {
     this.props.navigation.navigate('Detail', { news: item });
@@ -67,9 +72,14 @@ class ListScreen extends Component {
         onPress={() => {
           this.onPress(item); // Use the anonymous function to gain control of the argument passing rather than a reference
         }}>
-        <Text numberOfLines={1} style={styles.listItem}>
-          {item.title}
-        </Text>
+        <View>
+          <Text numberOfLines={1} style={styles.listItem}>
+            {item.title}
+          </Text>
+          <Text style={styles.publication}>
+            Published: {moment(item.publishedAt).fromNow()}
+          </Text>
+        </View>
       </TouchableHighlight>
     );
   }
@@ -99,9 +109,14 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
   },
+  publication: {
+    fontSize: 14,
+    paddingLeft: 10,
+    color: '#777',
+  },
   list: {
     justifyContent: 'center',
-    height: 50,
+    height: 60,
   },
   labelText: {
     fontWeight: 'bold',
